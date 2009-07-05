@@ -10,7 +10,7 @@ This plugin provides shortcodes and template tags for next/previous navigation i
 
 == Description ==
 
-This plugin provides shortcodes and template tags for next/previous navigation in pages. 
+This plugin provides shortcodes and template tags for next/previous navigation in pages. Includes a code and tag for the parent page, allowing Drupal-like book navigation.
 
 == Installation ==
 
@@ -20,4 +20,4 @@ This plugin provides shortcodes and template tags for next/previous navigation i
 
 == Screenshots ==
 
-1. Options page
+1. A portion of the options page
