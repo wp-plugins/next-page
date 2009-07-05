@@ -1,6 +1,6 @@
 === Next Page ===
 Contributors: sillybean
-Tags: admin
+Tags: page
 Requires at least: 2.5
 Tested up to: 2.8.1
 Stable tag: 1.0
