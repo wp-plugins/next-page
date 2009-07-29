@@ -93,7 +93,7 @@ function next_page_options() {
     <p><label><?php _e("After previous page link: "); ?><br />
     <input type="text" name="next_page__after_prev_link" id="next_page__after_prev_link" value="<?php echo stripslashes(htmlentities(get_option('next_page__after_prev_link'))); ?>" />  </label></p>
     <p>Shortcode: <strong>[previous]</strong><br />
-    Template tag: <strong>&lt;php previous_link(); ?&gt;</strong></p>
+    Template tag: <strong>&lt;?php previous_link(); ?&gt;</strong></p>
     </div>
     
     <div style="float: left; width: 30%; margin-right: 5%;">
@@ -107,7 +107,7 @@ function next_page_options() {
     <p><label><?php _e("After parent page link: "); ?><br />
     <input type="text" name="next_page__after_parent_link" id="next_page__after_parent_link" value="<?php echo stripslashes(htmlentities(get_option('next_page__after_parent_link'))); ?>" />  </label></p>
     <p>Shortcode: <strong>[parent]</strong><br />
-    Template tag: <strong>&lt;php parent_link(); ?&gt;</strong></p>
+    Template tag: <strong>&lt;?php parent_link(); ?&gt;</strong></p>
     </div>
     
     <div style="float: left; width: 30%;">
@@ -121,7 +121,7 @@ function next_page_options() {
     <p><label><?php _e("After next page link: "); ?><br />
     <input type="text" name="next_page__after_next_link" id="next_page__after_next_link" value="<?php echo stripslashes(htmlentities(get_option('next_page__after_next_link'))); ?>" />  </label></p>
     <p>Shortcode: <strong>[next]</strong><br />
-    Template tag: <strong>&lt;php next_link(); ?&gt;</strong></p>
+    Template tag: <strong>&lt;?php next_link(); ?&gt;</strong></p>
     </div>
     
     <input type="hidden" name="action" value="update" />
@@ -159,19 +159,16 @@ function next_page() {
 	$current = array_search($post->ID, $pages);
 	$nextID = $pages[$current+1];
 	
-	if (!empty($nextID)) {
-		$before_link = htmlspecialchars_decode(stripslashes(get_option('next_page__before_next_link')));
-		$linkurl = get_permalink($nextID);
-		$title = get_the_title($nextID);
-		$linktext = get_option('next_page__next_link_text');
-		if (strpos($linktext, '%title%') !== false) 
-			$linktext = str_replace('%title%', $title, $linktext);
-		$after_link = htmlspecialchars_decode(stripslashes(get_option('next_page__after_next_link')));
-		
-		$link = $before_link . '<a href="' . $linkurl . '" title="' . $title . '">' . $linktext . '</a>' . $after_link;
-		return $link;
-	}
-	else return '';
+	$before_link = htmlspecialchars_decode(stripslashes(get_option('next_page__before_next_link')));
+	$linkurl = get_permalink($nextID);
+	$title = get_the_title($nextID);
+	$linktext = get_option('next_page__next_link_text');
+	if (strpos($linktext, '%title%') !== false) 
+		$linktext = str_replace('%title%', $title, $linktext);
+	$after_link = htmlspecialchars_decode(stripslashes(get_option('next_page__after_next_link')));
+	
+	$link = $before_link . '<a href="' . $linkurl . '" title="' . $title . '">' . $linktext . '</a>' . $after_link;
+	return $link;
 } 
 
 function prev_page() {
@@ -180,47 +177,43 @@ function prev_page() {
 	$current = array_search($post->ID, $pages);
 	$prevID = $pages[$current-1];
 	
-	if (!empty($prevID)) {
-		$before_link = htmlspecialchars_decode(stripslashes(get_option('next_page__before_prev_link')));
-		$linkurl = get_permalink($prevID);
-		$title = get_the_title($prevID);
-		$linktext = get_option('next_page__prev_link_text');
-		if (strpos($linktext, '%title%') !== false) 
-			$linktext = str_replace('%title%', $title, $linktext);
-		$after_link = htmlspecialchars_decode(stripslashes(get_option('next_page__after_prev_link')));
-		
-		$link = $before_link . '<a href="' . $linkurl . '" title="' . $title . '">' . $linktext . '</a>' . $after_link;
-		return $link;
-	}
-	else return '';
+	$before_link = htmlspecialchars_decode(stripslashes(get_option('next_page__before_prev_link')));
+	$linkurl = get_permalink($prevID);
+	$title = get_the_title($prevID);
+	$linktext = get_option('next_page__prev_link_text');
+	if (strpos($linktext, '%title%') !== false) 
+		$linktext = str_replace('%title%', $title, $linktext);
+	$after_link = htmlspecialchars_decode(stripslashes(get_option('next_page__after_prev_link')));
+	
+	$link = $before_link . '<a href="' . $linkurl . '" title="' . $title . '">' . $linktext . '</a>' . $after_link;
+	return $link;
 } 
 
 function parent_page() {
 	global $post;
 	$parentID = $post->post_parent;
 	
-	if (!empty($parentID)) {
-		$before_link = htmlspecialchars_decode(stripslashes(get_option('next_page__before_parent_link')));
-		$linkurl = get_permalink($parentID);
-		$title = get_the_title($parentID);
-		$linktext = get_option('next_page__parent_link_text');
-		if (strpos($linktext, '%title%') !== false) 
-			$linktext = str_replace('%title%', $title, $linktext);
-		$after_link = htmlspecialchars_decode(stripslashes(get_option('next_page__after_parent_link')));
-		
-		$link = $before_link . '<a href="' . $linkurl . '" title="' . $title . '">' . $linktext . '</a>' . $after_link;
-		return $link;
-	}
-	else return '';
+	$before_link = htmlspecialchars_decode(stripslashes(get_option('next_page__before_parent_link')));
+	$linkurl = get_permalink($parentID);
+	$title = get_the_title($parentID);
+	$linktext = get_option('next_page__parent_link_text');
+	if (strpos($linktext, '%title%') !== false) 
+		$linktext = str_replace('%title%', $title, $linktext);
+	$after_link = htmlspecialchars_decode(stripslashes(get_option('next_page__after_parent_link')));
+	
+	$link = $before_link . '<a href="' . $linkurl . '" title="' . $title . '">' . $linktext . '</a>' . $after_link;
+	return $link;
 }
 
 // template tags
 function previous_link() {
 	echo prev_page();
 }
+
 function next_link() {
 	echo next_page();
 }
+
 function parent_link() {
 	echo parent_page();
 }
