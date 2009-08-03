@@ -8,8 +8,11 @@ Author: Stephanie Leary
 Author URI: http://sillybean.net/
 
 Changelog:
-1.0 (July 4, 2009)
-	First release
+= 1.1 =
+* Added security check before allowing users to manage options
+* Fixed typo in template tags shown on options page (August 3, 2009)
+= 1.0 = 
+* First release (July 4, 2009)
 
 Copyright 2009  Stephanie Leary  (email : steph@sillybean.net)
 
@@ -49,7 +52,7 @@ function next_page_add_pages() {
 
 // displays the options page content
 function next_page_options() {
-	
+	if ( current_user_can('manage_options') ) {  
 	// variables for the field and option names 
 		$hidden_field_name = 'next_page_submit_hidden';
 	
@@ -140,8 +143,9 @@ function next_page_options() {
 	</p>
 	</form>
 	</div>
-	
-<?php } // end function next_page_options() 
+<?php 
+	} // if user can
+} // end function next_page_options() 
 
 // make the magic happen
 function flatten_page_list() {

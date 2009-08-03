@@ -3,7 +3,7 @@ Contributors: sillybean
 Tags: page
 Requires at least: 2.5
 Tested up to: 2.8.2
-Stable tag: 1.0
+Stable tag: 1.1
 
 
 This plugin provides shortcodes and template tags for next/previous navigation in pages. 
@@ -21,3 +21,11 @@ This plugin provides shortcodes and template tags for next/previous navigation i
 == Screenshots ==
 
 1. A portion of the options page
+
+== Changelog ==
+
+= 1.1 =
+* Added security check before allowing users to manage options
+* Fixed typo in template tags shown on options page (August 3, 2009)
+= 1.0 = 
+* First release (July 4, 2009)
