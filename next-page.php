@@ -3,7 +3,7 @@
 Plugin Name: Next Page
 Plugin URI: http://sillybean.net/code/wordpress/next-page/
 Description: Provides shortcodes and template tags for next/previous navigation in pages. 
-Version: 1.0
+Version: 1.1
 Author: Stephanie Leary
 Author URI: http://sillybean.net/
 
