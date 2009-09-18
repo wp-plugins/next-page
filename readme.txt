@@ -2,7 +2,7 @@
 Contributors: sillybean
 Tags: page
 Requires at least: 2.5
-Tested up to: 2.8.3
+Tested up to: 2.8.4
 Stable tag: 1.2
 
 
