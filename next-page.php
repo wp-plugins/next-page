@@ -3,11 +3,14 @@
 Plugin Name: Next Page
 Plugin URI: http://sillybean.net/code/wordpress/next-page/
 Description: Provides shortcodes and template tags for next/previous navigation in pages. 
-Version: 1.0
+Version: 1.2
 Author: Stephanie Leary
 Author URI: http://sillybean.net/
 
 Changelog:
+= 1.2 = 
+* Added option to exclude pages by ID
+* Improved handling of special characters (September 16, 2009)
 = 1.1 =
 * Added security check before allowing users to manage options
 * Fixed typo in template tags shown on options page (August 3, 2009)
@@ -47,6 +50,7 @@ function next_page_add_pages() {
 	add_option('next_page__before_next_link', '<div class="alignright">', '', 'yes');
 	add_option('next_page__next_link_text', 'Next: %title%', '', 'yes');
 	add_option('next_page__after_next_link', '</div>', '', 'yes');
+	add_option('next_page__exclude', '', '', 'yes');
 
 }
 
@@ -71,6 +75,8 @@ function next_page_options() {
 			update_option('next_page__before_next_link', $_POST['next_page__before_next_link']);
 			update_option('next_page__next_link_text', $_POST['next_page__next_link_text']);
 			update_option('next_page__after_next_link', $_POST['next_page__after_next_link']);
+			
+			update_option('next_page__exclude', $_POST['next_page__exclude']);
 	
 			// Put an options updated message on the screen
 	?>
@@ -85,6 +91,10 @@ function next_page_options() {
     <h2><?php _e( 'Next Page Options'); ?></h2>
 	<input type="hidden" name="<?php echo $hidden_field_name; ?>" value="Y">
     
+    <p><label><?php _e("Exclude pages: "); ?><br />
+    <input type="text" name="next_page__exclude" id="next_page__exclude" value="<?php echo stripslashes(htmlentities(get_option('next_page__exclude'))); ?>" /><br />
+	<small><?php _e("Enter page IDs separated by commas."); ?></small></label></p>
+       
     <div style="float: left; width: 30%; margin-right: 5%;">
     <h3><?php _e("Previous Page Display:"); ?></h3>
     <p><label><?php _e("Before previous page link: "); ?><br />
@@ -148,8 +158,10 @@ function next_page_options() {
 } // end function next_page_options() 
 
 // make the magic happen
-function flatten_page_list() {
-	$pagelist = get_pages('sort_column=menu_order&sort_order=asc');
+function flatten_page_list($exclude = '') {
+	$args = 'sort_column=menu_order&sort_order=asc';
+	if (!empty($exclude)) $args .= '&exclude='.$exclude;
+	$pagelist = get_pages($args);
 	$pages = array();
 	foreach ($pagelist as $page) {
 	   $pages[] += $page->ID;
@@ -159,17 +171,18 @@ function flatten_page_list() {
 
 function next_page() {
 	global $post;
-	$pages = flatten_page_list();
+	$exclude = get_option('next_page__exclude');
+	$pages = flatten_page_list($exclude);
 	$current = array_search($post->ID, $pages);
 	$nextID = $pages[$current+1];
 	
-	$before_link = htmlspecialchars_decode(stripslashes(get_option('next_page__before_next_link')));
+	$before_link = stripslashes(get_option('next_page__before_next_link'));
 	$linkurl = get_permalink($nextID);
 	$title = get_the_title($nextID);
 	$linktext = get_option('next_page__next_link_text');
 	if (strpos($linktext, '%title%') !== false) 
 		$linktext = str_replace('%title%', $title, $linktext);
-	$after_link = htmlspecialchars_decode(stripslashes(get_option('next_page__after_next_link')));
+	$after_link = stripslashes(get_option('next_page__after_next_link'));
 	
 	$link = $before_link . '<a href="' . $linkurl . '" title="' . $title . '">' . $linktext . '</a>' . $after_link;
 	return $link;
@@ -177,17 +190,18 @@ function next_page() {
 
 function prev_page() {
 	global $post;
-	$pages = flatten_page_list();
+	$exclude = get_option('next_page__exclude');
+	$pages = flatten_page_list($exclude);
 	$current = array_search($post->ID, $pages);
 	$prevID = $pages[$current-1];
 	
-	$before_link = htmlspecialchars_decode(stripslashes(get_option('next_page__before_prev_link')));
+	$before_link = stripslashes(get_option('next_page__before_prev_link'));
 	$linkurl = get_permalink($prevID);
 	$title = get_the_title($prevID);
 	$linktext = get_option('next_page__prev_link_text');
 	if (strpos($linktext, '%title%') !== false) 
 		$linktext = str_replace('%title%', $title, $linktext);
-	$after_link = htmlspecialchars_decode(stripslashes(get_option('next_page__after_prev_link')));
+	$after_link = stripslashes(get_option('next_page__after_prev_link'));
 	
 	$link = $before_link . '<a href="' . $linkurl . '" title="' . $title . '">' . $linktext . '</a>' . $after_link;
 	return $link;
@@ -197,16 +211,20 @@ function parent_page() {
 	global $post;
 	$parentID = $post->post_parent;
 	
-	$before_link = htmlspecialchars_decode(stripslashes(get_option('next_page__before_parent_link')));
-	$linkurl = get_permalink($parentID);
-	$title = get_the_title($parentID);
-	$linktext = get_option('next_page__parent_link_text');
-	if (strpos($linktext, '%title%') !== false) 
-		$linktext = str_replace('%title%', $title, $linktext);
-	$after_link = htmlspecialchars_decode(stripslashes(get_option('next_page__after_parent_link')));
-	
-	$link = $before_link . '<a href="' . $linkurl . '" title="' . $title . '">' . $linktext . '</a>' . $after_link;
-	return $link;
+	$exclude = array(get_option('next_page__exclude'));
+	if (in_array($parentID, $exclude)) return false;
+	else {
+		$before_link = stripslashes(get_option('next_page__before_parent_link'));
+		$linkurl = get_permalink($parentID);
+		$title = get_the_title($parentID);
+		$linktext = get_option('next_page__parent_link_text');
+		if (strpos($linktext, '%title%') !== false) 
+			$linktext = str_replace('%title%', $title, $linktext);
+		$after_link = stripslashes(get_option('next_page__after_parent_link'));
+		
+		$link = $before_link . '<a href="' . $linkurl . '" title="' . $title . '">' . $linktext . '</a>' . $after_link;
+		return $link;
+	}
 }
 
 // template tags
