@@ -3,11 +3,13 @@
 Plugin Name: Next Page
 Plugin URI: http://sillybean.net/code/wordpress/next-page/
 Description: Provides shortcodes and template tags for next/previous navigation in pages. 
-Version: 1.2
+Version: 1.3
 Author: Stephanie Leary
 Author URI: http://sillybean.net/
 
 Changelog:
+= 1.3 = 
+* Revised for settings API
 = 1.2 = 
 * Added option to exclude pages by ID
 * Improved handling of special characters (September 16, 2009)
@@ -34,77 +36,120 @@ Copyright 2009  Stephanie Leary  (email : steph@sillybean.net)
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-// Hook for adding admin menus
 add_action('admin_menu', 'next_page_add_pages');
+
+register_activation_hook(__FILE__, 'next_page_activation');
+function next_page_activation() {
+	// remove old options
+	$oldoptions = array();
+	$oldoptions[] = get_option('next_page__before_prev_link');
+	$oldoptions[] = get_option('next_page__prev_link_text');
+	$oldoptions[] = get_option('next_page__after_prev_link');
+	
+	$oldoptions[] = get_option('next_page__before_parent_link');
+	$oldoptions[] = get_option('next_page__parent_link_text');
+	$oldoptions[] = get_option('next_page__after_parent_link');
+	
+	$oldoptions[] = get_option('next_page__before_next_link');
+	$oldoptions[] = get_option('next_page__next_link_text');
+	$oldoptions[] = get_option('next_page__after_next_link');
+	
+	$oldoptions[] = get_option('next_page__exclude');
+	
+	delete_option('next_page__before_prev_link');
+	delete_option('next_page__prev_link_text');
+	delete_option('next_page__after_prev_link');
+
+	delete_option('next_page__before_parent_link');
+	delete_option('next_page__parent_link_text');
+	delete_option('next_page__after_parent_link');
+
+	delete_option('next_page__before_next_link');
+	delete_option('next_page__next_link_text');
+	delete_option('next_page__after_next_link');
+
+	delete_option('next_page__exclude');
+	
+	// set defaults
+	$options = array();
+	$options['before_prev_link'] = '<div class="alignleft">';
+	$options['prev_link_text'] = 'Previous: %title%';
+	$options['after_prev_link'] = '</div>';
+	
+	$options['before_parent_link'] = '<div class="aligncenter">';
+	$options['parent_link_text'] = 'Up one level: %title%';
+	$options['after_parent_link'] = '</div>';
+	
+	$options['before_next_link'] = '<div class="alignright">';
+	$options['next_link_text'] = 'Next: %title%';
+	$options['after_next_link'] = '</div>';
+	
+	$options['exclude'] = '';
+	
+	// set new option
+	add_option('next_page', array_merge($oldoptions, $options), '', 'yes');
+}
+
+// when deactivated, remove option
+register_deactivation_hook( __FILE__, 'next_page_delete_options' );
+
+function html_import_delete_options() {
+	delete_option('next_page');
+}
+
+// i18n
+$plugin_dir = basename(dirname(__FILE__)). '/languages';
+load_plugin_textdomain( 'next_page', 'wp-content/plugins/' . $plugin_dir, $plugin_dir );
+
+function next_page_plugin_actions($links, $file) {
+ 	if ($file == 'next-page/next-page.php' && function_exists("admin_url")) {
+		$settings_link = '<a href="' . admin_url('options-general.php?page=next-page') . '">' . __('Settings', 'next-page') . '</a>';
+		array_unshift($links, $settings_link); 
+	}
+	return $links;
+}
+add_filter('plugin_action_links', 'next_page_plugin_actions', 10, 2);
+
+add_action('admin_init', 'register_next_page_options' );
+function register_next_page_options(){
+	register_setting( 'next_page', 'next_page' );
+}
 
 function next_page_add_pages() {
     // Add a new submenu under Options:
 	add_options_page('Next Page', 'Next Page', 8, 'next-page', 'next_page_options');
-	// set defaults
-	add_option('next_page__before_prev_link', '<div class="alignleft">', '', 'yes');
-	add_option('next_page__prev_link_text', 'Previous: %title%', '', 'yes');
-	add_option('next_page__after_prev_link', '</div>', '', 'yes');
-	add_option('next_page__before_parent_link', '<div class="aligncenter">', '', 'yes');
-	add_option('next_page__parent_link_text', 'Up one level: %title%', '', 'yes');
-	add_option('next_page__after_parent_link', '</div>', '', 'yes');
-	add_option('next_page__before_next_link', '<div class="alignright">', '', 'yes');
-	add_option('next_page__next_link_text', 'Next: %title%', '', 'yes');
-	add_option('next_page__after_next_link', '</div>', '', 'yes');
-	add_option('next_page__exclude', '', '', 'yes');
-
 }
 
 // displays the options page content
 function next_page_options() {
 	if ( current_user_can('manage_options') ) {  
-	// variables for the field and option names 
-		$hidden_field_name = 'next_page_submit_hidden';
-	
-		// See if the user has posted us some information
-		// If they did, this hidden field will be set to 'Y'
-		if( $_POST[ $hidden_field_name ] == 'Y' ) {
-				// Save the posted value in the database
-			update_option('next_page__before_prev_link', $_POST['next_page__before_prev_link']);
-			update_option('next_page__prev_link_text', $_POST['next_page__prev_link_text']);
-			update_option('next_page__after_prev_link', $_POST['next_page__after_prev_link']);
-			
-			update_option('next_page__before_parent_link', $_POST['next_page__before_parent_link']);
-			update_option('next_page__parent_link_text', $_POST['next_page__parent_link_text']);
-			update_option('next_page__after_parent_link', $_POST['next_page__after_parent_link']);
-			
-			update_option('next_page__before_next_link', $_POST['next_page__before_next_link']);
-			update_option('next_page__next_link_text', $_POST['next_page__next_link_text']);
-			update_option('next_page__after_next_link', $_POST['next_page__after_next_link']);
-			
-			update_option('next_page__exclude', $_POST['next_page__exclude']);
-	
-			// Put an options updated message on the screen
-	?>
-	<div class="updated"><p><strong><?php _e('Options saved.'); ?></strong></p></div>
-    
-	<?php  } // Now display the options editing screen ?>
-	
+
+	?>	
     <div class="wrap">
-	<form method="post" id="next_page_form">
-    <?php wp_nonce_field('update-options'); ?>
+	<form method="post" id="next_page_form" action="options.php">
+		<?php settings_fields('next_page');
+		$options = get_option('next_page'); ?>
 
     <h2><?php _e( 'Next Page Options'); ?></h2>
-	<input type="hidden" name="<?php echo $hidden_field_name; ?>" value="Y">
     
     <p><label><?php _e("Exclude pages: "); ?><br />
-    <input type="text" name="next_page__exclude" id="next_page__exclude" value="<?php echo stripslashes(htmlentities(get_option('next_page__exclude'))); ?>" /><br />
+    <input type="text" name="next_page[exclude]" id="exclude" 
+		value="<?php echo stripslashes(htmlentities($options['exclude'])); ?>" /><br />
 	<small><?php _e("Enter page IDs separated by commas."); ?></small></label></p>
        
     <div style="float: left; width: 30%; margin-right: 5%;">
     <h3><?php _e("Previous Page Display:"); ?></h3>
     <p><label><?php _e("Before previous page link: "); ?><br />
-    <input type="text" name="next_page__before_prev_link" id="next_page__before_prev_link" value="<?php echo stripslashes(htmlentities(get_option('next_page__before_prev_link'))); ?>" />  </label></p>
+    <input type="text" name="next_page[before_prev_link]" id="before_prev_link" 
+		value="<?php echo stripslashes(htmlentities($options['before_prev_link'])); ?>" />  </label></p>
     
     <p><label><?php _e("Previous page link text: <small>Use %title% for the page title</small>"); ?><br />
-    <input type="text" name="next_page__prev_link_text" id="next_page__prev_link_text" value="<?php echo stripslashes(htmlentities(get_option('next_page__prev_link_text'))); ?>" />  </label></p>
+    <input type="text" name="next_page[prev_link_text]" id="prev_link_text" 
+		value="<?php echo stripslashes(htmlentities($options['prev_link_text'])); ?>" />  </label></p>
     
     <p><label><?php _e("After previous page link: "); ?><br />
-    <input type="text" name="next_page__after_prev_link" id="next_page__after_prev_link" value="<?php echo stripslashes(htmlentities(get_option('next_page__after_prev_link'))); ?>" />  </label></p>
+    <input type="text" name="next_page[after_prev_link]" id="after_prev_link" 
+	value="<?php echo stripslashes(htmlentities($options['after_prev_link'])); ?>" />  </label></p>
     <p>Shortcode: <strong>[previous]</strong><br />
     Template tag: <strong>&lt;?php previous_link(); ?&gt;</strong></p>
     </div>
@@ -112,13 +157,16 @@ function next_page_options() {
     <div style="float: left; width: 30%; margin-right: 5%;">
     <h3><?php _e("Parent Page Display:"); ?></h3>
     <p><label><?php _e("Before parent page link: "); ?><br />
-    <input type="text" name="next_page__before_parent_link" id="next_page__before_parent_link" value="<?php echo stripslashes(htmlentities(get_option('next_page__before_parent_link'))); ?>" />  </label></p>
+    <input type="text" name="next_page[before_parent_link]" id="before_parent_link" 
+		value="<?php echo stripslashes(htmlentities($options['before_parent_link'])); ?>" />  </label></p>
     
     <p><label><?php _e("Parent page link text: <small>Use %title% for the page title</small>"); ?><br />
-    <input type="text" name="next_page__parent_link_text" id="next_page__parent_link_text" value="<?php echo stripslashes(htmlentities(get_option('next_page__parent_link_text'))); ?>" />  </label></p>
+    <input type="text" name="next_page[parent_link_text]" id="parent_link_text" 
+		value="<?php echo stripslashes(htmlentities($options['parent_link_text'])); ?>" />  </label></p>
     
     <p><label><?php _e("After parent page link: "); ?><br />
-    <input type="text" name="next_page__after_parent_link" id="next_page__after_parent_link" value="<?php echo stripslashes(htmlentities(get_option('next_page__after_parent_link'))); ?>" />  </label></p>
+    <input type="text" name="next_page[after_parent_link]" id="after_parent_link" 
+		value="<?php echo stripslashes(htmlentities($options['after_parent_link'])); ?>" />  </label></p>
     <p>Shortcode: <strong>[parent]</strong><br />
     Template tag: <strong>&lt;?php parent_link(); ?&gt;</strong></p>
     </div>
@@ -126,27 +174,19 @@ function next_page_options() {
     <div style="float: left; width: 30%;">
     <h3><?php _e("Next Page Display:"); ?></h3>
     <p><label><?php _e("Before next page link: "); ?><br />
-    <input type="text" name="next_page__before_next_link" id="next_page__before_next_link" value="<?php echo stripslashes(htmlentities(get_option('next_page__before_next_link'))); ?>" />  </label></p>
+    <input type="text" name="next_page[before_next_link]" id="before_next_link" 
+		value="<?php echo stripslashes(htmlentities($options['before_next_link'])); ?>" />  </label></p>
     
     <p><label><?php _e("Next page link text: <small>Use %title% for the page title</small>"); ?><br />
-    <input type="text" name="next_page__next_link_text" id="next_page__next_link_text" value="<?php echo stripslashes(htmlentities(get_option('next_page__next_link_text'))); ?>" />  </label></p>
+    <input type="text" name="next_page[next_link_text]" id="next_link_text" 
+		value="<?php echo stripslashes(htmlentities($options['next_link_text'])); ?>" />  </label></p>
     
     <p><label><?php _e("After next page link: "); ?><br />
-    <input type="text" name="next_page__after_next_link" id="next_page__after_next_link" value="<?php echo stripslashes(htmlentities(get_option('next_page__after_next_link'))); ?>" />  </label></p>
+    <input type="text" name="next_page[after_next_link]" id="after_next_link" 
+		value="<?php echo stripslashes(htmlentities($options['after_next_link'])); ?>" />  </label></p>
     <p>Shortcode: <strong>[next]</strong><br />
     Template tag: <strong>&lt;?php next_link(); ?&gt;</strong></p>
     </div>
-    
-    <input type="hidden" name="action" value="update" />
-	<input type="hidden" name="page_options" value="next_page__before_prev_link,
-    next_page__prev_link_text,
-    next_page__after_prev_link,
-    next_page__before_parent_link,
-    next_page__parent_link_text,
-    next_page__before_next_link,
-    next_page__next_link_text,
-    next_page__next_link_text,
-    next_page__after_next_link" />
     
 	<p class="submit">
 	<input type="submit" name="submit" class="button-primary" value="<?php _e('Update Options'); ?>" />
