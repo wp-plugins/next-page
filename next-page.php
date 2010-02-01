@@ -73,15 +73,15 @@ function next_page_activation() {
 	// set defaults
 	$options = array();
 	$options['before_prev_link'] = '<div class="alignleft">';
-	$options['prev_link_text'] = 'Previous: %title%';
+	$options['prev_link_text'] = __('Previous:', 'next-page').' %title%';
 	$options['after_prev_link'] = '</div>';
 	
 	$options['before_parent_link'] = '<div class="aligncenter">';
-	$options['parent_link_text'] = 'Up one level: %title%';
+	$options['parent_link_text'] = __('Up one level:', 'next-page').' %title%';
 	$options['after_parent_link'] = '</div>';
 	
 	$options['before_next_link'] = '<div class="alignright">';
-	$options['next_link_text'] = 'Next: %title%';
+	$options['next_link_text'] = __('Next:', 'next-page').' %title%';
 	$options['after_next_link'] = '</div>';
 	
 	$options['exclude'] = '';
@@ -130,24 +130,24 @@ function next_page_options() {
 		<?php settings_fields('next_page');
 		$options = get_option('next_page'); ?>
 
-    <h2><?php _e( 'Next Page Options'); ?></h2>
+    <h2><?php _e( 'Next Page Options', 'next-page'); ?></h2>
     
-    <p><label><?php _e("Exclude pages: "); ?><br />
+    <p><label><?php _e("Exclude pages: ", 'next-page'); ?><br />
     <input type="text" name="next_page[exclude]" id="exclude" 
 		value="<?php echo stripslashes(htmlentities($options['exclude'])); ?>" /><br />
-	<small><?php _e("Enter page IDs separated by commas."); ?></small></label></p>
+	<small><?php _e("Enter page IDs separated by commas.", 'next-page'); ?></small></label></p>
        
     <div style="float: left; width: 30%; margin-right: 5%;">
-    <h3><?php _e("Previous Page Display:"); ?></h3>
-    <p><label><?php _e("Before previous page link: "); ?><br />
+    <h3><?php _e("Previous Page Display:", 'next-page'); ?></h3>
+    <p><label><?php _e("Before previous page link: ", 'next-page'); ?><br />
     <input type="text" name="next_page[before_prev_link]" id="before_prev_link" 
 		value="<?php echo stripslashes(htmlentities($options['before_prev_link'])); ?>" />  </label></p>
     
-    <p><label><?php _e("Previous page link text: <small>Use %title% for the page title</small>"); ?><br />
+    <p><label><?php _e("Previous page link text: <small>Use %title% for the page title</small>", 'next-page'); ?><br />
     <input type="text" name="next_page[prev_link_text]" id="prev_link_text" 
 		value="<?php echo stripslashes(htmlentities($options['prev_link_text'])); ?>" />  </label></p>
     
-    <p><label><?php _e("After previous page link: "); ?><br />
+    <p><label><?php _e("After previous page link: ", 'next-page'); ?><br />
     <input type="text" name="next_page[after_prev_link]" id="after_prev_link" 
 	value="<?php echo stripslashes(htmlentities($options['after_prev_link'])); ?>" />  </label></p>
     <p>Shortcode: <strong>[previous]</strong><br />
@@ -155,16 +155,16 @@ function next_page_options() {
     </div>
     
     <div style="float: left; width: 30%; margin-right: 5%;">
-    <h3><?php _e("Parent Page Display:"); ?></h3>
-    <p><label><?php _e("Before parent page link: "); ?><br />
+    <h3><?php _e("Parent Page Display:", 'next-page'); ?></h3>
+    <p><label><?php _e("Before parent page link: ", 'next-page'); ?><br />
     <input type="text" name="next_page[before_parent_link]" id="before_parent_link" 
 		value="<?php echo stripslashes(htmlentities($options['before_parent_link'])); ?>" />  </label></p>
     
-    <p><label><?php _e("Parent page link text: <small>Use %title% for the page title</small>"); ?><br />
+    <p><label><?php _e("Parent page link text: <small>Use %title% for the page title</small>", 'next-page'); ?><br />
     <input type="text" name="next_page[parent_link_text]" id="parent_link_text" 
 		value="<?php echo stripslashes(htmlentities($options['parent_link_text'])); ?>" />  </label></p>
     
-    <p><label><?php _e("After parent page link: "); ?><br />
+    <p><label><?php _e("After parent page link: ", 'next-page'); ?><br />
     <input type="text" name="next_page[after_parent_link]" id="after_parent_link" 
 		value="<?php echo stripslashes(htmlentities($options['after_parent_link'])); ?>" />  </label></p>
     <p>Shortcode: <strong>[parent]</strong><br />
@@ -172,16 +172,16 @@ function next_page_options() {
     </div>
     
     <div style="float: left; width: 30%;">
-    <h3><?php _e("Next Page Display:"); ?></h3>
-    <p><label><?php _e("Before next page link: "); ?><br />
+    <h3><?php _e("Next Page Display:", 'next-page'); ?></h3>
+    <p><label><?php _e("Before next page link: ", 'next-page'); ?><br />
     <input type="text" name="next_page[before_next_link]" id="before_next_link" 
 		value="<?php echo stripslashes(htmlentities($options['before_next_link'])); ?>" />  </label></p>
     
-    <p><label><?php _e("Next page link text: <small>Use %title% for the page title</small>"); ?><br />
+    <p><label><?php _e("Next page link text: <small>Use %title% for the page title</small>", 'next-page'); ?><br />
     <input type="text" name="next_page[next_link_text]" id="next_link_text" 
 		value="<?php echo stripslashes(htmlentities($options['next_link_text'])); ?>" />  </label></p>
     
-    <p><label><?php _e("After next page link: "); ?><br />
+    <p><label><?php _e("After next page link: ", 'next-page'); ?><br />
     <input type="text" name="next_page[after_next_link]" id="after_next_link" 
 		value="<?php echo stripslashes(htmlentities($options['after_next_link'])); ?>" />  </label></p>
     <p>Shortcode: <strong>[next]</strong><br />
@@ -189,7 +189,7 @@ function next_page_options() {
     </div>
     
 	<p class="submit">
-	<input type="submit" name="submit" class="button-primary" value="<?php _e('Update Options'); ?>" />
+	<input type="submit" name="submit" class="button-primary" value="<?php _e('Update Options', 'next-page'); ?>" />
 	</p>
 	</form>
 	</div>
