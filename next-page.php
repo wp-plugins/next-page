@@ -202,27 +202,28 @@ function flatten_page_list($exclude = '') {
 	$args = 'sort_column=menu_order&sort_order=asc';
 	if (!empty($exclude)) $args .= '&exclude='.$exclude;
 	$pagelist = get_pages($args);
-	$pages = array();
-	foreach ($pagelist as $page) {
-	   $pages[] += $page->ID;
+	$mypages = array();
+	foreach ($pagelist as $thispage) {
+	   $mypages[] += $thispage->ID;
 	}
-	return $pages;
+	return $mypages;
 }
 
 function next_page() {
 	global $post;
-	$exclude = get_option('next_page__exclude');
-	$pages = flatten_page_list($exclude);
-	$current = array_search($post->ID, $pages);
-	$nextID = $pages[$current+1];
+	$options = get_option('next_page');
+	$exclude = $options['exclude'];
+	$pagelist = flatten_page_list($exclude);
+	$current = array_search($post->ID, $pagelist);
+	$nextID = $pagelist[$current+1];
 	
-	$before_link = stripslashes(get_option('next_page__before_next_link'));
+	$before_link = stripslashes($options['before_next_link']);
 	$linkurl = get_permalink($nextID);
 	$title = get_the_title($nextID);
-	$linktext = get_option('next_page__next_link_text');
+	$linktext = $options['next_link_text'];
 	if (strpos($linktext, '%title%') !== false) 
 		$linktext = str_replace('%title%', $title, $linktext);
-	$after_link = stripslashes(get_option('next_page__after_next_link'));
+	$after_link = stripslashes($options['after_next_link']);
 	
 	$link = $before_link . '<a href="' . $linkurl . '" title="' . $title . '">' . $linktext . '</a>' . $after_link;
 	return $link;
@@ -230,18 +231,19 @@ function next_page() {
 
 function prev_page() {
 	global $post;
-	$exclude = get_option('next_page__exclude');
-	$pages = flatten_page_list($exclude);
-	$current = array_search($post->ID, $pages);
-	$prevID = $pages[$current-1];
+	$options = get_option('next_page');
+	$exclude = $options['exclude'];
+	$pagelist = flatten_page_list($exclude);
+	$current = array_search($post->ID, $pagelist);
+	$prevID = $pagelist[$current-1];
 	
-	$before_link = stripslashes(get_option('next_page__before_prev_link'));
+	$before_link = stripslashes($options['before_prev_link']);
 	$linkurl = get_permalink($prevID);
 	$title = get_the_title($prevID);
-	$linktext = get_option('next_page__prev_link_text');
+	$linktext = $options['prev_link_text'];
 	if (strpos($linktext, '%title%') !== false) 
 		$linktext = str_replace('%title%', $title, $linktext);
-	$after_link = stripslashes(get_option('next_page__after_prev_link'));
+	$after_link = stripslashes($options['after_prev_link']);
 	
 	$link = $before_link . '<a href="' . $linkurl . '" title="' . $title . '">' . $linktext . '</a>' . $after_link;
 	return $link;
@@ -249,18 +251,19 @@ function prev_page() {
 
 function parent_page() {
 	global $post;
+	$options = get_option('next_page');
 	$parentID = $post->post_parent;
 	
-	$exclude = array(get_option('next_page__exclude'));
+	$exclude = array($options['next_page__exclude']);
 	if (in_array($parentID, $exclude)) return false;
 	else {
-		$before_link = stripslashes(get_option('next_page__before_parent_link'));
+		$before_link = stripslashes($options['before_parent_link']);
 		$linkurl = get_permalink($parentID);
 		$title = get_the_title($parentID);
-		$linktext = get_option('next_page__parent_link_text');
+		$linktext = $options['parent_link_text'];
 		if (strpos($linktext, '%title%') !== false) 
 			$linktext = str_replace('%title%', $title, $linktext);
-		$after_link = stripslashes(get_option('next_page__after_parent_link'));
+		$after_link = stripslashes($options['after_parent_link']);
 		
 		$link = $before_link . '<a href="' . $linkurl . '" title="' . $title . '">' . $linktext . '</a>' . $after_link;
 		return $link;
