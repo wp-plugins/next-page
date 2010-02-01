@@ -10,6 +10,7 @@ Author URI: http://sillybean.net/
 Changelog:
 = 1.3 = 
 * Revised for settings API
+* Internationalization (January 31, 2010)
 = 1.2 = 
 * Added option to exclude pages by ID
 * Improved handling of special characters (September 16, 2009)

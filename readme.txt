@@ -2,8 +2,8 @@
 Contributors: sillybean
 Tags: page
 Requires at least: 2.5
-Tested up to: 2.8.4
-Stable tag: 1.2
+Tested up to: 3.0-alpha
+Stable tag: 1.3
 
 
 This plugin provides shortcodes and template tags for next/previous navigation in pages. 
@@ -16,7 +16,7 @@ This plugin provides shortcodes and template tags for next/previous navigation i
 
 1. Upload the `next-page` directory to `/wp-content/plugins/` 
 1. Activate the plugin through the 'Plugins' menu in WordPress
-1. Set the display options under Options &arr; Next Page.
+1. Set the display options under Settings &arr; Next Page.
 
 == Screenshots ==
 
@@ -24,6 +24,9 @@ This plugin provides shortcodes and template tags for next/previous navigation i
 
 == Changelog ==
 
+= 1.3 = 
+* Revised for settings API
+* Internationalization (January 31, 2010)
 = 1.2 = 
 * Added option to exclude pages by ID
 * Improved handling of special characters (September 16, 2009)
