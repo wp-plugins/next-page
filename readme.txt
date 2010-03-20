@@ -3,7 +3,7 @@ Contributors: sillybean
 Tags: page
 Requires at least: 2.5
 Tested up to: 3.0-alpha
-Stable tag: 1.3
+Stable tag: 1.4
 
 
 This plugin provides shortcodes and template tags for next/previous navigation in pages. 
@@ -24,6 +24,10 @@ This plugin provides shortcodes and template tags for next/previous navigation i
 
 == Changelog ==
 
+= 1.4 =
+* Fixed a bug that could cause the wrong content to appear on pages where the next/previous links are used
+* Moved option removal to uninstall instead of deactivation
+* Fixed a few non-localized strings (March 19, 2010)
 = 1.3 = 
 * Revised for settings API
 * Internationalization (January 31, 2010)

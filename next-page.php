@@ -3,11 +3,15 @@
 Plugin Name: Next Page
 Plugin URI: http://sillybean.net/code/wordpress/next-page/
 Description: Provides shortcodes and template tags for next/previous navigation in pages. 
-Version: 1.3
+Version: 1.4
 Author: Stephanie Leary
 Author URI: http://sillybean.net/
 
 Changelog:
+= 1.4 =
+* Fixed a bug that could cause the wrong content to appear on pages where the next/previous links are used
+* Moved option removal to uninstall instead of deactivation
+* Fixed a few non-localized strings (March 19, 2010)
 = 1.3 = 
 * Revised for settings API
 * Internationalization (January 31, 2010)
@@ -91,16 +95,18 @@ function next_page_activation() {
 	add_option('next_page', array_merge($oldoptions, $options), '', 'yes');
 }
 
-// when deactivated, remove option
-register_deactivation_hook( __FILE__, 'next_page_delete_options' );
+// when uninstalled, remove option
+register_uninstall_hook( __FILE__, 'next_page_delete_options' );
 
-function html_import_delete_options() {
+function next_page_delete_options() {
 	delete_option('next_page');
 }
 
 // i18n
-$plugin_dir = basename(dirname(__FILE__)). '/languages';
-load_plugin_textdomain( 'next_page', 'wp-content/plugins/' . $plugin_dir, $plugin_dir );
+if (!defined('WP_PLUGIN_DIR'))
+	define('WP_PLUGIN_DIR', dirname(dirname(__FILE__))); 
+$lang_dir = basename(dirname(__FILE__)). '/languages';
+load_plugin_textdomain( 'next_page', 'WP_PLUGIN_DIR'.$lang_dir, $lang_dir );
 
 function next_page_plugin_actions($links, $file) {
  	if ($file == 'next-page/next-page.php' && function_exists("admin_url")) {
@@ -118,14 +124,21 @@ function register_next_page_options(){
 
 function next_page_add_pages() {
     // Add a new submenu under Options:
-	add_options_page('Next Page', 'Next Page', 8, 'next-page', 'next_page_options');
+	$css = add_options_page('Next Page', 'Next Page', 'manage_options', 'next-page', 'next_page_options');
+	add_action("admin_head-$css", 'next_page_css');
 }
 
-// displays the options page content
-function next_page_options() {
-	if ( current_user_can('manage_options') ) {  
+function next_page_css() { ?>
+<style type="text/css">
+#next-page, #parent-page, #previous-page { float: left; width: 30%; margin-right: 5%; }
+#next-page { margin-right: 0; }
+</style>
+<?php 
+}
 
-	?>	
+
+// displays the options page content
+function next_page_options() { ?>	
     <div class="wrap">
 	<form method="post" id="next_page_form" action="options.php">
 		<?php settings_fields('next_page');
@@ -135,10 +148,10 @@ function next_page_options() {
     
     <p><label><?php _e("Exclude pages: ", 'next-page'); ?><br />
     <input type="text" name="next_page[exclude]" id="exclude" 
-		value="<?php echo stripslashes(htmlentities($options['exclude'])); ?>" /><br />
+		value="<?php echo $options['exclude']; ?>" /><br />
 	<small><?php _e("Enter page IDs separated by commas.", 'next-page'); ?></small></label></p>
        
-    <div style="float: left; width: 30%; margin-right: 5%;">
+    <div id="previous-page">
     <h3><?php _e("Previous Page Display:", 'next-page'); ?></h3>
     <p><label><?php _e("Before previous page link: ", 'next-page'); ?><br />
     <input type="text" name="next_page[before_prev_link]" id="before_prev_link" 
@@ -151,11 +164,11 @@ function next_page_options() {
     <p><label><?php _e("After previous page link: ", 'next-page'); ?><br />
     <input type="text" name="next_page[after_prev_link]" id="after_prev_link" 
 	value="<?php echo stripslashes(htmlentities($options['after_prev_link'])); ?>" />  </label></p>
-    <p>Shortcode: <strong>[previous]</strong><br />
-    Template tag: <strong>&lt;?php previous_link(); ?&gt;</strong></p>
+    <p><?php _e('Shortcode:'); ?> <strong>[previous]</strong><br />
+    <?php _e('Template tag:'); ?> <strong>&lt;?php previous_link(); ?&gt;</strong></p>
     </div>
     
-    <div style="float: left; width: 30%; margin-right: 5%;">
+    <div id="parent-page">
     <h3><?php _e("Parent Page Display:", 'next-page'); ?></h3>
     <p><label><?php _e("Before parent page link: ", 'next-page'); ?><br />
     <input type="text" name="next_page[before_parent_link]" id="before_parent_link" 
@@ -168,11 +181,11 @@ function next_page_options() {
     <p><label><?php _e("After parent page link: ", 'next-page'); ?><br />
     <input type="text" name="next_page[after_parent_link]" id="after_parent_link" 
 		value="<?php echo stripslashes(htmlentities($options['after_parent_link'])); ?>" />  </label></p>
-    <p>Shortcode: <strong>[parent]</strong><br />
-    Template tag: <strong>&lt;?php parent_link(); ?&gt;</strong></p>
+    <p><?php _e('Shortcode:'); ?> <strong>[parent]</strong><br />
+    <?php _e('Template tag:'); ?> <strong>&lt;?php parent_link(); ?&gt;</strong></p>
     </div>
     
-    <div style="float: left; width: 30%;">
+    <div id="next-page">
     <h3><?php _e("Next Page Display:", 'next-page'); ?></h3>
     <p><label><?php _e("Before next page link: ", 'next-page'); ?><br />
     <input type="text" name="next_page[before_next_link]" id="before_next_link" 
@@ -185,8 +198,8 @@ function next_page_options() {
     <p><label><?php _e("After next page link: ", 'next-page'); ?><br />
     <input type="text" name="next_page[after_next_link]" id="after_next_link" 
 		value="<?php echo stripslashes(htmlentities($options['after_next_link'])); ?>" />  </label></p>
-    <p>Shortcode: <strong>[next]</strong><br />
-    Template tag: <strong>&lt;?php next_link(); ?&gt;</strong></p>
+    <p><?php _e('Shortcode:'); ?> <strong>[next]</strong><br />
+    <?php _e('Template tag:'); ?> <strong>&lt;?php next_link(); ?&gt;</strong></p>
     </div>
     
 	<p class="submit">
@@ -195,7 +208,6 @@ function next_page_options() {
 	</form>
 	</div>
 <?php 
-	} // if user can
 } // end function next_page_options() 
 
 // make the magic happen
@@ -210,7 +222,7 @@ function flatten_page_list($exclude = '') {
 	return $mypages;
 }
 
-function next_page() {
+function next_link() {
 	global $post;
 	$options = get_option('next_page');
 	$exclude = $options['exclude'];
@@ -227,10 +239,10 @@ function next_page() {
 	$after_link = stripslashes($options['after_next_link']);
 	
 	$link = $before_link . '<a href="' . $linkurl . '" title="' . $title . '">' . $linktext . '</a>' . $after_link;
-	return $link;
+	echo $link;
 } 
 
-function prev_page() {
+function previous_link() {
 	global $post;
 	$options = get_option('next_page');
 	$exclude = $options['exclude'];
@@ -247,15 +259,15 @@ function prev_page() {
 	$after_link = stripslashes($options['after_prev_link']);
 	
 	$link = $before_link . '<a href="' . $linkurl . '" title="' . $title . '">' . $linktext . '</a>' . $after_link;
-	return $link;
+	echo $link;
 } 
 
-function parent_page() {
+function parent_link() {
 	global $post;
 	$options = get_option('next_page');
 	$parentID = $post->post_parent;
 	
-	$exclude = array($options['next_page__exclude']);
+	$exclude = array($options['exclude']);
 	if (in_array($parentID, $exclude)) return false;
 	else {
 		$before_link = stripslashes($options['before_parent_link']);
@@ -267,25 +279,12 @@ function parent_page() {
 		$after_link = stripslashes($options['after_parent_link']);
 		
 		$link = $before_link . '<a href="' . $linkurl . '" title="' . $title . '">' . $linktext . '</a>' . $after_link;
-		return $link;
+		echo $link;
 	}
 }
 
-// template tags
-function previous_link() {
-	echo prev_page();
-}
-
-function next_link() {
-	echo next_page();
-}
-
-function parent_link() {
-	echo parent_page();
-}
-
 // shortcodes
-add_shortcode('previous', 'prev_page');
-add_shortcode('next', 'next_page');
-add_shortcode('parent', 'parent_page');
+add_shortcode('previous', 'previous_link');
+add_shortcode('next', 'next_link');
+add_shortcode('parent', 'parent_link');
 ?>
