@@ -3,11 +3,18 @@
 Plugin Name: Next Page
 Plugin URI: http://sillybean.net/code/wordpress/next-page/
 Description: Provides shortcodes and template tags for next/previous navigation in pages. 
-Version: 1.4
+Version: 1.5
+License: GPLv2
 Author: Stephanie Leary
 Author URI: http://sillybean.net/
 
 Changelog:
+= 1.5 =
+* Fixed a bug that caused the links to appear at the top of the content when shortcodes are used (thanks, Psychochild!)
+* Fixed a bug where an excluded page with children would result in links to the wrong pages (thanks, lemony!)
+* Fixed a bug where links were shown even if there was no next/previous page in the sequence (thanks, Andrew!)
+* Added option to loop back to the first page when the last page is being displayed, and to last when first is displayed
+* Belorussian translation by Marcis G. (August 5, 2010)
 = 1.4 =
 * Fixed a bug that could cause the wrong content to appear on pages where the next/previous links are used
 * Moved option removal to uninstall instead of deactivation
@@ -23,22 +30,6 @@ Changelog:
 * Fixed typo in template tags shown on options page (August 3, 2009)
 = 1.0 = 
 * First release (July 4, 2009)
-
-Copyright 2009  Stephanie Leary  (email : steph@sillybean.net)
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 add_action('admin_menu', 'next_page_add_pages');
@@ -90,6 +81,7 @@ function next_page_activation() {
 	$options['after_next_link'] = '</div>';
 	
 	$options['exclude'] = '';
+	$options['loop'] = 0;
 	
 	// set new option
 	add_option('next_page', array_merge($oldoptions, $options), '', 'yes');
@@ -146,6 +138,13 @@ function next_page_options() { ?>
 
     <h2><?php _e( 'Next Page Options', 'next-page'); ?></h2>
     
+	<p><?php _e("On the first and last pages in the sequence:", 'next-page'); ?><br />
+    <label><input type="radio" name="next_page[loop]" id="loop" value="1" <?php checked('1', $options['loop']); ?> />
+		<?php _e("Loop around, showing links back to the beginning or end", 'next-page'); ?></label><br />
+	<label><input type="radio" name="next_page[loop]" id="loop" value="0" <?php checked('0', $options['loop']); ?> />
+		<?php _e("Omit the empty link", 'next-page'); ?></label>	
+	</p>
+
     <p><label><?php _e("Exclude pages: ", 'next-page'); ?><br />
     <input type="text" name="next_page[exclude]" id="exclude" 
 		value="<?php echo $options['exclude']; ?>" /><br />
@@ -212,23 +211,38 @@ function next_page_options() { ?>
 
 // make the magic happen
 function flatten_page_list($exclude = '') {
-	$args = 'sort_column=menu_order&sort_order=asc';
-	if (!empty($exclude)) $args .= '&exclude='.$exclude;
-	$pagelist = get_pages($args);
-	$mypages = array();
-	foreach ($pagelist as $thispage) {
-	   $mypages[] += $thispage->ID;
-	}
-	return $mypages;
+   $args = 'sort_column=menu_order&sort_order=asc';
+   $pagelist = get_pages($args);
+   $mypages = array();
+   if (!empty($exclude)) {
+       $excludes = split(',', $exclude);
+       foreach ($pagelist as $thispage) {
+           if (!in_array($thispage->ID, $excludes)) {
+               $mypages[] += $thispage->ID;
+           }
+       }
+   }
+   else {
+       foreach ($pagelist as $thispage) {
+           $mypages[] += $thispage->ID;
+       }
+   }
+   return $mypages;
 }
 
-function next_link() {
+function get_next_link() {
 	global $post;
 	$options = get_option('next_page');
 	$exclude = $options['exclude'];
 	$pagelist = flatten_page_list($exclude);
 	$current = array_search($post->ID, $pagelist);
 	$nextID = $pagelist[$current+1];
+	
+	if (!isset($nextID)) 
+		if ($options['loop'])
+			$nextID = $pagelist[0];
+		else 
+			return '';
 	
 	$before_link = stripslashes($options['before_next_link']);
 	$linkurl = get_permalink($nextID);
@@ -239,10 +253,10 @@ function next_link() {
 	$after_link = stripslashes($options['after_next_link']);
 	
 	$link = $before_link . '<a href="' . $linkurl . '" title="' . $title . '">' . $linktext . '</a>' . $after_link;
-	echo $link;
+	return $link;
 } 
 
-function previous_link() {
+function get_previous_link() {
 	global $post;
 	$options = get_option('next_page');
 	$exclude = $options['exclude'];
@@ -250,6 +264,12 @@ function previous_link() {
 	$current = array_search($post->ID, $pagelist);
 	$prevID = $pagelist[$current-1];
 	
+	if (!isset($prevID))
+	 	if ($options['loop'])
+			$prevID = $pagelist[count($pagelist) - 1];
+		else 
+			return '';
+		
 	$before_link = stripslashes($options['before_prev_link']);
 	$linkurl = get_permalink($prevID);
 	$title = get_the_title($prevID);
@@ -259,10 +279,10 @@ function previous_link() {
 	$after_link = stripslashes($options['after_prev_link']);
 	
 	$link = $before_link . '<a href="' . $linkurl . '" title="' . $title . '">' . $linktext . '</a>' . $after_link;
-	echo $link;
+	return $link;
 } 
 
-function parent_link() {
+function get_parent_link() {
 	global $post;
 	$options = get_option('next_page');
 	$parentID = $post->post_parent;
@@ -279,12 +299,22 @@ function parent_link() {
 		$after_link = stripslashes($options['after_parent_link']);
 		
 		$link = $before_link . '<a href="' . $linkurl . '" title="' . $title . '">' . $linktext . '</a>' . $after_link;
-		echo $link;
+		return $link;
 	}
 }
 
+function next_link() {
+	echo get_next_link();
+}
+function previous_link() {
+	echo get_previous_link();
+}
+function parent_link() {
+	echo get_parent_link();
+}
+
 // shortcodes
-add_shortcode('previous', 'previous_link');
-add_shortcode('next', 'next_link');
-add_shortcode('parent', 'parent_link');
+add_shortcode('previous', 'get_previous_link');
+add_shortcode('next', 'get_next_link');
+add_shortcode('parent', 'get_parent_link');
 ?>
