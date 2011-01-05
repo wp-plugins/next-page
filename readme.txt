@@ -16,7 +16,7 @@ This plugin provides shortcodes and template tags for next/previous navigation i
 
 * Belorussian translation by <a href="http://pc.de/">Marcis Gasuns</a>
 
-If you would like to send me a translation, please write to me through my contact page. Let me know which plugin you've translated and how you would like to be credited. I will write you back so you can attach the files in your reply.
+If you would like to send me a translation, please write to me through <a href="http://sillybean.net/about/contact/">my contact page</a>. Let me know which plugin you've translated and how you would like to be credited. I will write you back so you can attach the files in your reply.
 
 == Installation ==
 
