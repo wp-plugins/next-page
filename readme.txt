@@ -2,19 +2,21 @@
 Contributors: sillybean
 Tags: page
 Requires at least: 2.5
-Tested up to: 3.0.1
-Stable tag: 1.5
+Tested up to: 3.1
+Stable tag: 1.5.1
 
 
 This plugin provides shortcodes and template tags for next/previous navigation in pages. 
 
 == Description ==
 
-This plugin provides shortcodes and template tags for next/previous navigation in pages. Includes a code and tag for the parent page, allowing Drupal-like book navigation.
+This plugin provides shortcodes and template tags for next/previous navigation in pages. Includes a shortcode and tag for the parent page, allowing Drupal-like book navigation.
 
-=== Translations ===
+= Translations =
 
-Belorussian translation by <a href="http://pc.de/">Marcis Gasuns</a>
+* Belorussian translation by <a href="http://pc.de/">Marcis Gasuns</a>
+
+If you would like to send me a translation, please write to me through my contact page. Let me know which plugin you've translated and how you would like to be credited. I will write you back so you can attach the files in your reply.
 
 == Installation ==
 
@@ -28,12 +30,14 @@ Belorussian translation by <a href="http://pc.de/">Marcis Gasuns</a>
 
 == Changelog ==
 
+= 1.5.1 =
+* Better handling of international characters. (Thanks, jflycn!) (January 5, 2011)
 = 1.5 =
 * Fixed a bug that caused the links to appear at the top of the content when shortcodes are used (thanks, Psychochild!)
 * Fixed a bug where an excluded page with children would result in links to the wrong pages (thanks, lemony!)
 * Fixed a bug where links were shown even if there was no next/previous page in the sequence (thanks, Andrew!)
 * Added option to loop back to the first page when the last page is being displayed, and to last when first is displayed
-* Belorussian translation by <a href="http://pc.de/">Marcis Gasuns</a> (August 5, 2010)
+* Belorussian translation by Marcis G. (August 5, 2010)
 = 1.4 =
 * Fixed a bug that could cause the wrong content to appear on pages where the next/previous links are used
 * Moved option removal to uninstall instead of deactivation

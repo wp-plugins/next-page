@@ -3,33 +3,10 @@
 Plugin Name: Next Page
 Plugin URI: http://sillybean.net/code/wordpress/next-page/
 Description: Provides shortcodes and template tags for next/previous navigation in pages. 
-Version: 1.5
+Version: 1.5.1
 License: GPLv2
 Author: Stephanie Leary
 Author URI: http://sillybean.net/
-
-Changelog:
-= 1.5 =
-* Fixed a bug that caused the links to appear at the top of the content when shortcodes are used (thanks, Psychochild!)
-* Fixed a bug where an excluded page with children would result in links to the wrong pages (thanks, lemony!)
-* Fixed a bug where links were shown even if there was no next/previous page in the sequence (thanks, Andrew!)
-* Added option to loop back to the first page when the last page is being displayed, and to last when first is displayed
-* Belorussian translation by Marcis G. (August 5, 2010)
-= 1.4 =
-* Fixed a bug that could cause the wrong content to appear on pages where the next/previous links are used
-* Moved option removal to uninstall instead of deactivation
-* Fixed a few non-localized strings (March 19, 2010)
-= 1.3 = 
-* Revised for settings API
-* Internationalization (January 31, 2010)
-= 1.2 = 
-* Added option to exclude pages by ID
-* Improved handling of special characters (September 16, 2009)
-= 1.1 =
-* Added security check before allowing users to manage options
-* Fixed typo in template tags shown on options page (August 3, 2009)
-= 1.0 = 
-* First release (July 4, 2009)
 */
 
 add_action('admin_menu', 'next_page_add_pages');
@@ -154,15 +131,15 @@ function next_page_options() { ?>
     <h3><?php _e("Previous Page Display:", 'next-page'); ?></h3>
     <p><label><?php _e("Before previous page link: ", 'next-page'); ?><br />
     <input type="text" name="next_page[before_prev_link]" id="before_prev_link" 
-		value="<?php echo stripslashes(htmlentities($options['before_prev_link'])); ?>" />  </label></p>
+		value="<?php echo esc_html($options['before_prev_link']); ?>" />  </label></p>
     
     <p><label><?php _e("Previous page link text: <small>Use %title% for the page title</small>", 'next-page'); ?><br />
     <input type="text" name="next_page[prev_link_text]" id="prev_link_text" 
-		value="<?php echo stripslashes(htmlentities($options['prev_link_text'])); ?>" />  </label></p>
+		value="<?php echo esc_html($options['prev_link_text']); ?>" />  </label></p>
     
     <p><label><?php _e("After previous page link: ", 'next-page'); ?><br />
     <input type="text" name="next_page[after_prev_link]" id="after_prev_link" 
-	value="<?php echo stripslashes(htmlentities($options['after_prev_link'])); ?>" />  </label></p>
+	value="<?php echo esc_html($options['after_prev_link']); ?>" />  </label></p>
     <p><?php _e('Shortcode:'); ?> <strong>[previous]</strong><br />
     <?php _e('Template tag:'); ?> <strong>&lt;?php previous_link(); ?&gt;</strong></p>
     </div>
@@ -171,15 +148,15 @@ function next_page_options() { ?>
     <h3><?php _e("Parent Page Display:", 'next-page'); ?></h3>
     <p><label><?php _e("Before parent page link: ", 'next-page'); ?><br />
     <input type="text" name="next_page[before_parent_link]" id="before_parent_link" 
-		value="<?php echo stripslashes(htmlentities($options['before_parent_link'])); ?>" />  </label></p>
+		value="<?php echo esc_html($options['before_parent_link']); ?>" />  </label></p>
     
     <p><label><?php _e("Parent page link text: <small>Use %title% for the page title</small>", 'next-page'); ?><br />
     <input type="text" name="next_page[parent_link_text]" id="parent_link_text" 
-		value="<?php echo stripslashes(htmlentities($options['parent_link_text'])); ?>" />  </label></p>
+		value="<?php echo esc_html($options['parent_link_text']); ?>" />  </label></p>
     
     <p><label><?php _e("After parent page link: ", 'next-page'); ?><br />
     <input type="text" name="next_page[after_parent_link]" id="after_parent_link" 
-		value="<?php echo stripslashes(htmlentities($options['after_parent_link'])); ?>" />  </label></p>
+		value="<?php echo esc_html($options['after_parent_link']); ?>" />  </label></p>
     <p><?php _e('Shortcode:'); ?> <strong>[parent]</strong><br />
     <?php _e('Template tag:'); ?> <strong>&lt;?php parent_link(); ?&gt;</strong></p>
     </div>
@@ -188,15 +165,15 @@ function next_page_options() { ?>
     <h3><?php _e("Next Page Display:", 'next-page'); ?></h3>
     <p><label><?php _e("Before next page link: ", 'next-page'); ?><br />
     <input type="text" name="next_page[before_next_link]" id="before_next_link" 
-		value="<?php echo stripslashes(htmlentities($options['before_next_link'])); ?>" />  </label></p>
+		value="<?php echo esc_html($options['before_next_link']); ?>" />  </label></p>
     
     <p><label><?php _e("Next page link text: <small>Use %title% for the page title</small>", 'next-page'); ?><br />
     <input type="text" name="next_page[next_link_text]" id="next_link_text" 
-		value="<?php echo stripslashes(htmlentities($options['next_link_text'])); ?>" />  </label></p>
+		value="<?php echo esc_html($options['next_link_text']); ?>" />  </label></p>
     
     <p><label><?php _e("After next page link: ", 'next-page'); ?><br />
     <input type="text" name="next_page[after_next_link]" id="after_next_link" 
-		value="<?php echo stripslashes(htmlentities($options['after_next_link'])); ?>" />  </label></p>
+		value="<?php echo esc_html($options['after_next_link']); ?>" />  </label></p>
     <p><?php _e('Shortcode:'); ?> <strong>[next]</strong><br />
     <?php _e('Template tag:'); ?> <strong>&lt;?php next_link(); ?&gt;</strong></p>
     </div>
@@ -317,4 +294,13 @@ function parent_link() {
 add_shortcode('previous', 'get_previous_link');
 add_shortcode('next', 'get_next_link');
 add_shortcode('parent', 'get_parent_link');
+
+// pre-3.1 compatibility, lifted from wp-includes/formatting.php
+if (!function_exists('esc_html')) {
+	function esc_html( $text ) {
+		$safe_text = wp_check_invalid_utf8( $text );
+		$safe_text = _wp_specialchars( $safe_text, ENT_QUOTES );
+		return apply_filters( 'esc_html', $safe_text, $text );
+	}
+}
 ?>
