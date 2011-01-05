@@ -22,9 +22,7 @@ This plugin provides shortcodes and template tags for next/previous navigation i
 
 1. A portion of the options page
 
-== i18n ==
-
-= Translations =
+== Translations ==
 
 * Belorussian translation by <a href="http://pc.de/">Marcis Gasuns</a>
 
