@@ -12,12 +12,6 @@ This plugin provides shortcodes and template tags for next/previous navigation i
 
 This plugin provides shortcodes and template tags for next/previous navigation in pages. Includes a shortcode and tag for the parent page, allowing Drupal-like book navigation.
 
-= Translations =
-
-* Belorussian translation by <a href="http://pc.de/">Marcis Gasuns</a>
-
-If you would like to send me a translation, please write to me through <a href="http://sillybean.net/about/contact/">my contact page</a>. Let me know which plugin you've translated and how you would like to be credited. I will write you back so you can attach the files in your reply.
-
 == Installation ==
 
 1. Upload the `next-page` directory to `/wp-content/plugins/` 
@@ -27,6 +21,14 @@ If you would like to send me a translation, please write to me through <a href="
 == Screenshots ==
 
 1. A portion of the options page
+
+== i18n ==
+
+= Translations =
+
+* Belorussian translation by <a href="http://pc.de/">Marcis Gasuns</a>
+
+If you would like to send me a translation, please write to me through <a href="http://sillybean.net/about/contact/">my contact page</a>. Let me know which plugin you've translated and how you would like to be credited. I will write you back so you can attach the files in your reply.
 
 == Changelog ==
 
