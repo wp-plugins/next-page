@@ -22,7 +22,7 @@ If you would like to send me a translation, please write to me through <a href="
 
 1. Upload the `next-page` directory to `/wp-content/plugins/` 
 1. Activate the plugin through the 'Plugins' menu in WordPress
-1. Set the display options under Settings &arr; Next Page.
+1. Set the display options under Settings &rarr; Next Page.
 
 == Screenshots ==
 
