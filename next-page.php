@@ -72,10 +72,7 @@ function next_page_delete_options() {
 }
 
 // i18n
-if (!defined('WP_PLUGIN_DIR'))
-	define('WP_PLUGIN_DIR', dirname(dirname(__FILE__))); 
-$lang_dir = basename(dirname(__FILE__)). '/languages';
-load_plugin_textdomain( 'next_page', 'WP_PLUGIN_DIR'.$lang_dir, $lang_dir );
+load_plugin_textdomain( 'next_page', '', plugin_dir_path(__FILE__) . '/languages' );
 
 function next_page_plugin_actions($links, $file) {
  	if ($file == 'next-page/next-page.php' && function_exists("admin_url")) {

@@ -1,6 +1,9 @@
 === Next Page ===
 Contributors: sillybean
-Tags: page
+Tags: page, adopt-me
+Donate link: http://stephanieleary.com/code/wordpress/next-page/
+Text Domain: next_page
+Domain Path: /languages
 Requires at least: 2.5
 Tested up to: 3.1
 Stable tag: 1.5.2
@@ -9,6 +12,8 @@ Stable tag: 1.5.2
 This plugin provides shortcodes and template tags for next/previous navigation in pages. 
 
 == Description ==
+
+This plugin is no longer supported. If you would like to adopt it, please <a href="http://stephanieleary.com/about/contact/">contact me</a>.
 
 This plugin provides shortcodes and template tags for next/previous navigation in pages. Includes a shortcode and tag for the parent page, allowing Drupal-like book navigation.
 
