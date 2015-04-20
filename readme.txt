@@ -5,7 +5,7 @@ Donate link: http://stephanieleary.com/code/wordpress/next-page/
 Text Domain: next_page
 Domain Path: /languages
 Requires at least: 2.5
-Tested up to: 3.1
+Tested up to: 4.2
 Stable tag: 1.5.2
 
 
